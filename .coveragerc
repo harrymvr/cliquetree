@@ -1,0 +1,18 @@
+[paths]
+source = cliquetree
+
+[run]
+branch = True
+source = cliquetree 
+parallel = true
+
+[report]
+show_missing = true
+precision = 2
+omit = 
+    */python?.?/*
+    */site-packages/nose/*
+    *__init__*
+    *migrations*
+
+

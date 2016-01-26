@@ -30,7 +30,7 @@ setup(
     version=VERSION,
     license='ISC',
     description='Given a chordal graph, this package provides functions to update the graph ensuring its chordality.',
-    long_description='%s\n%s' % (read('README.rst'), re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
+    long_description='%s' % (read('README.rst')),
     author='Charalampos Mavroforakis',
     author_email='cmav@bu.edu',
     url='https://github.com/harrymvr/cliquetree',
