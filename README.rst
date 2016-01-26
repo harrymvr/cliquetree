@@ -9,6 +9,7 @@ ensuring its chordality. It is based on the first of the two implementations
 described in
 
 ::
+
     Ibarra, Louis. 
     "Fully dynamic algorithms for chordal graphs and split graphs"
     ACM Transactions on Algorithms (TALG) (2008).
