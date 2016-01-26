@@ -1,1 +1,1 @@
-from cliquetree import CliqueTree
+from .cliquetree import CliqueTree
