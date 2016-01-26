@@ -40,7 +40,7 @@ To run all the tests for the code, you will need tox_ -- check its webpage for i
 
 .. _tox: https://testrun.org/tox/latest/
 
-Once tox_ is installed, use your terminal to enter the directory with the local copy of the code (here it's named '*absorbing-centrality*') and simply type the following command.
+Once tox_ is installed, use your terminal to enter the directory with the local copy of the code (here it's named '*cliquetree*') and simply type the following command.
 
 ::
 

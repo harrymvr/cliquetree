@@ -57,8 +57,6 @@ setup(
     ],
     install_requires=[
         'networkx>=1.10',
-        'numpy>=1.10.2',
-        'scipy>=0.16.1'
     ],
     extras_require={
         'tests': tests_require,

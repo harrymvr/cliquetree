@@ -8,7 +8,7 @@ little bit helps, and credit will always be given.
 Bug reports
 ===========
 
-When `reporting a bug <https://github.com/harrymvr/absorbing-centrality/issues>`_ please include:
+When `reporting a bug <https://github.com/harrymvr/cliquetree/issues>`_ please include:
 
     * Your operating system name and version.
     * Any details about your local setup that might be helpful in troubleshooting.
@@ -17,14 +17,14 @@ When `reporting a bug <https://github.com/harrymvr/absorbing-centrality/issues>`
 Documentation improvements
 ==========================
 
-Absorbing Random-Walk Centrality could always use more documentation, whether as part of the
-official Absorbing Random-Walk Centrality docs, in docstrings, or even on the web in blog posts,
+CliqueTree could always use more documentation, whether as part of the
+official CliqueTree docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Feature requests and feedback
 =============================
 
-The best way to send feedback is to file an issue at https://github.com/harrymvr/absorbing-centrality/issues.
+The best way to send feedback is to file an issue at https://github.com/harrymvr/cliquetree/issues.
 
 If you are proposing a feature:
 
@@ -35,12 +35,12 @@ If you are proposing a feature:
 Development
 ===========
 
-To set up `absorbing-centrality` for local development:
+To set up `cliquetree` for local development:
 
-1. `Fork absorbing-centrality on GitHub <https://github.com/harrymvr/absorbing-centrality/fork>`_.
+1. `Fork cliquetree on GitHub <https://github.com/harrymvr/cliquetree/fork>`_.
 2. Clone your fork locally::
 
-    git clone git@github.com:your_name_here/absorbing-centrality.git
+    git clone git@github.com:your_name_here/cliquetree.git
 
 3. Create a branch for local development::
 
@@ -72,7 +72,7 @@ For merging, you should:
 3. Add yourself to ``AUTHORS.rst``.
 
 .. [1] If you don't have all the necessary python versions available locally you can rely on Travis - it will 
-       `run the tests <https://travis-ci.org/harrymvr/absorbing-centrality/pull_requests>`_ for each change you add in the pull request.
+       `run the tests <https://travis-ci.org/harrymvr/cliquetree/pull_requests>`_ for each change you add in the pull request.
        
        It will be slower though ...
        
