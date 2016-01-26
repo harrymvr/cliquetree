@@ -5,7 +5,16 @@ Dynamic Clique Tree
 |docs| |travis| |coveralls|
     
 Given a chordal graph, this package provides functions to update the graph
-ensuring its chordality.
+ensuring its chordality. It is based on the first of the two implementations 
+described in
+
+::
+    Ibarra, Louis. 
+    "Fully dynamic algorithms for chordal graphs and split graphs"
+    ACM Transactions on Algorithms (TALG) (2008).
+
+The ``add_edge`` and ``update_insertable(v)`` operations costs O(n), where n is 
+the number of nodes in the graph.
 
 Installation
 ------------
