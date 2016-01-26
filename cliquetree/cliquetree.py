@@ -101,12 +101,10 @@ class CliqueTree:
             path = nx.shortest_path(self.cliquetree, source=K1, target=K2)
             min_edge_weight = 1e100
             min_edge = None
-            print 'path:',
             first_node = True
             found_Kx = False
             for clq1, clq2 in zip(path[:-1], path[1:]):
                 if first_node:
-                    print self.nodes_in_clique[clq1]
                     if x in self.nodes_in_clique[clq1]:
                         Kx = clq1
                     first_node = False
@@ -118,17 +116,14 @@ class CliqueTree:
                     else:
                         # first time to not find x in clq2, Kx = clq1
                         found_Kx = True
-                print '--', self.nodes_in_clique[clq2],
                 if found_Kx:
                     sep = self.cliquetree[clq1][clq2]['nodes']
                     if len(sep) < min_edge_weight:
                         min_edge_weight = len(sep)
                         min_edge = (clq1, clq2)
-            print
             Kx_nodes = self.nodes_in_clique[Kx]
             Ky_nodes = self.nodes_in_clique[Ky]
             I = Kx_nodes.intersection(Ky_nodes)
-            print Ky in self.cliquetree[Kx], min_edge_weight, I
             if Ky not in self.cliquetree[Kx] and min_edge_weight > len(I):
                 return False
             elif Ky not in self.cliquetree[Kx] and min_edge_weight == len(I):
@@ -136,16 +131,12 @@ class CliqueTree:
                 self.cliquetree.remove_edge(*min_edge)
                 c1, c2 = self._edge(Kx, Ky)
                 self.cliquetree.add_edge(c1, c2, nodes=I)
-            print 'Kx is %s \t Ky is %s' % (self.clique_tostr(Kx),
-                                            self.clique_tostr(Ky))
 
             # Step 2
             # Add the cliquetree node now, because we might have aborted above
             self._add_clique_node(self.uid,
                                   I.union(set([x, y])))
             edge_to_remove = self._edge(Kx, Ky)
-            print "will remove %s -> %s" % (self.clique_tostr(edge_to_remove[0]),
-                                            self.clique_tostr(edge_to_remove[1]))
             self.cliquetree.remove_edge(*edge_to_remove)
 
             to_remove = []
@@ -159,7 +150,6 @@ class CliqueTree:
 
             for clq in to_remove:
                 # clq is not maximal in the new graph
-                print "moving neighbors of", self.clique_tostr(clq)
                 for v in self.cliquetree[clq]:
                     if v == self.uid or v in [Kx, Ky]:
                         continue
@@ -167,8 +157,6 @@ class CliqueTree:
                               .intersection(self.nodes_in_clique[self.uid])
                     self.cliquetree.add_edge(v, self.uid, nodes=sep)
                     c1, c2 = self._edge(v, clq)
-                    print "\tdeleting %s -> %s" % (self.clique_tostr(c1),
-                                                   self.clique_tostr(c2))
                 self.cliquetree.remove_node(clq)
                 del self.nodes_in_clique[clq]
                 for v in self.node_in_cliques:
@@ -185,18 +173,12 @@ class CliqueTree:
                                   neighbors_x.intersection(neighbors_y)
                                       .union(set([x, y])))
 
-        if changed_edges:
-            print 'changed edges:'
-            for cl1, cl2 in changed_edges:
-                print '\t%s -> %s' % (self.clique_tostr(cl1), self.clique_tostr(cl2))
-
         # Update the actual graph
         self.G.add_edge(x, y)
         # if (x, y) in self.insertable:
         #     self.insertable.remove((x, y))
 
         self.uid += 1
-        print '======================'
         self.insertable = set()
         for v in self.G:
             self.update_insertable(v)
@@ -215,9 +197,6 @@ class CliqueTree:
                 nx.dfs_labeled_edges(self.cliquetree, source=K1):
             if data['dir'] is 'nontree' or (clq1 == K1 and clq2 == K1):
                 continue
-            # print 'Traversing %s -> %s (%s)' % (self.clique_tostr(clq1),
-                                                # self.clique_tostr(clq2),
-                                                # data['dir'])
             clq_min, clq_max = self._edge(clq1, clq2)
             sep = self.cliquetree[clq_min][clq_max]['nodes']
             if data['dir'] is 'forward':
