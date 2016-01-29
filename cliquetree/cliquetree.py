@@ -123,12 +123,17 @@ class CliqueTree:
                         if len(sep) < min_edge_weight:
                             min_edge_weight = len(sep)
                             min_edge = (clq1, clq2)
+                    if found_Kx and Ky:
+                        break
                 Kx_nodes = self.nodes_in_clique[Kx]
                 Ky_nodes = self.nodes_in_clique[Ky]
                 I = Kx_nodes.intersection(Ky_nodes)
-                if Ky not in self.cliquetree[Kx] and min_edge_weight > len(I):
-                    return False
-                elif Ky not in self.cliquetree[Kx] and min_edge_weight == len(I):
+                if Ky not in self.cliquetree[Kx]:
+                    if min_edge_weight > len(I):
+                        return False
+
+                if Ky in self.cliquetree[Kx] or (min_edge_weight == len(I) and
+                        Ky not in self.cliquetree[Kx]):
                     # replace min_edge with (Kx, Ky)
                     self.cliquetree.remove_edge(*min_edge)
                     c1, c2 = self._edge(Kx, Ky)
@@ -226,6 +231,8 @@ class CliqueTree:
                                         and u not in self.G[v]:
                                     # Ky for u
                                     self.insertable.add(self._edge(u, v))
+                                    if u == v:
+                                        raise ValueError('u is equal to v')
                     else:
                         min_weights.append(min_weights[-1])
                     if nodes_seen:
