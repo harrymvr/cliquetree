@@ -1,4 +1,5 @@
 import networkx as nx
+from networkx import NetworkXNoPath
 
 
 class CliqueTree:
@@ -98,75 +99,89 @@ class CliqueTree:
             Kx = None
             Ky = None
             # figure out Kx and Ky
-            path = nx.shortest_path(self.cliquetree, source=K1, target=K2)
-            min_edge_weight = 1e100
-            min_edge = None
-            first_node = True
-            found_Kx = False
-            for clq1, clq2 in zip(path[:-1], path[1:]):
-                if first_node:
-                    if x in self.nodes_in_clique[clq1]:
-                        Kx = clq1
-                    first_node = False
-                if not Ky:
-                    if y in self.nodes_in_clique[clq2]:
-                        Ky = clq2
-                    if x in self.nodes_in_clique[clq2]:
-                        Kx = clq2
+            try:
+                path = nx.shortest_path(self.cliquetree, source=K1, target=K2)
+                min_edge_weight = 1e100
+                min_edge = None
+                first_node = True
+                found_Kx = False
+                for clq1, clq2 in zip(path[:-1], path[1:]):
+                    if first_node:
+                        if x in self.nodes_in_clique[clq1]:
+                            Kx = clq1
+                        first_node = False
+                    if not Ky:
+                        if y in self.nodes_in_clique[clq2]:
+                            Ky = clq2
+                        if x in self.nodes_in_clique[clq2]:
+                            Kx = clq2
+                        else:
+                            # first time to not find x in clq2, Kx = clq1
+                            found_Kx = True
+                    if found_Kx:
+                        sep = self.cliquetree[clq1][clq2]['nodes']
+                        if len(sep) < min_edge_weight:
+                            min_edge_weight = len(sep)
+                            min_edge = (clq1, clq2)
+                    if found_Kx and Ky:
+                        break
+                Kx_nodes = self.nodes_in_clique[Kx]
+                Ky_nodes = self.nodes_in_clique[Ky]
+                I = Kx_nodes.intersection(Ky_nodes)
+                if Ky not in self.cliquetree[Kx]:
+                    if min_edge_weight > len(I):
+                        return False
+
+                if Ky in self.cliquetree[Kx] or (min_edge_weight == len(I) and
+                        Ky not in self.cliquetree[Kx]):
+                    # replace min_edge with (Kx, Ky)
+                    self.cliquetree.remove_edge(*min_edge)
+                    c1, c2 = self._edge(Kx, Ky)
+                    self.cliquetree.add_edge(c1, c2, nodes=I)
+
+                # Step 2
+                # Add the cliquetree node now, because we might have aborted above
+                self._add_clique_node(self.uid,
+                                      I.union(set([x, y])))
+                edge_to_remove = self._edge(Kx, Ky)
+                self.cliquetree.remove_edge(*edge_to_remove)
+
+                to_remove = []
+                to_keep = []
+                for clq in [Kx, Ky]:
+                    clq_nodes = self.nodes_in_clique[clq]
+                    if len(clq_nodes) > len(I) + 1:
+                        to_keep.append(clq)
                     else:
-                        # first time to not find x in clq2, Kx = clq1
-                        found_Kx = True
-                if found_Kx:
-                    sep = self.cliquetree[clq1][clq2]['nodes']
-                    if len(sep) < min_edge_weight:
-                        min_edge_weight = len(sep)
-                        min_edge = (clq1, clq2)
-            Kx_nodes = self.nodes_in_clique[Kx]
-            Ky_nodes = self.nodes_in_clique[Ky]
-            I = Kx_nodes.intersection(Ky_nodes)
-            if Ky not in self.cliquetree[Kx] and min_edge_weight > len(I):
-                return False
-            elif Ky not in self.cliquetree[Kx] and min_edge_weight == len(I):
-                # replace min_edge with (Kx, Ky)
-                self.cliquetree.remove_edge(*min_edge)
-                c1, c2 = self._edge(Kx, Ky)
-                self.cliquetree.add_edge(c1, c2, nodes=I)
+                        to_remove.append(clq)
 
-            # Step 2
-            # Add the cliquetree node now, because we might have aborted above
-            self._add_clique_node(self.uid,
-                                  I.union(set([x, y])))
-            edge_to_remove = self._edge(Kx, Ky)
-            self.cliquetree.remove_edge(*edge_to_remove)
-
-            to_remove = []
-            to_keep = []
-            for clq in [Kx, Ky]:
-                clq_nodes = self.nodes_in_clique[clq]
-                if len(clq_nodes) > len(I) + 1:
-                    to_keep.append(clq)
-                else:
-                    to_remove.append(clq)
-
-            for clq in to_remove:
-                # clq is not maximal in the new graph
-                for v in self.cliquetree[clq]:
-                    if v == self.uid or v in [Kx, Ky]:
-                        continue
-                    sep = self.nodes_in_clique[v]\
+                for clq in to_remove:
+                    # clq is not maximal in the new graph
+                    for v in self.cliquetree[clq]:
+                        if v == self.uid or v in [Kx, Ky]:
+                            continue
+                        sep = self.nodes_in_clique[v]\
+                                  .intersection(self.nodes_in_clique[self.uid])
+                        self.cliquetree.add_edge(v, self.uid, nodes=sep)
+                        c1, c2 = self._edge(v, clq)
+                    self.cliquetree.remove_node(clq)
+                    del self.nodes_in_clique[clq]
+                    for v in self.node_in_cliques:
+                        if clq in self.node_in_cliques[v]:
+                            self.node_in_cliques[v].remove(clq)
+                for clq in to_keep:
+                    sep = self.nodes_in_clique[clq]\
                               .intersection(self.nodes_in_clique[self.uid])
-                    self.cliquetree.add_edge(v, self.uid, nodes=sep)
-                    c1, c2 = self._edge(v, clq)
-                self.cliquetree.remove_node(clq)
-                del self.nodes_in_clique[clq]
-                for v in self.node_in_cliques:
-                    if clq in self.node_in_cliques[v]:
-                        self.node_in_cliques[v].remove(clq)
-            for clq in to_keep:
-                sep = self.nodes_in_clique[clq]\
-                          .intersection(self.nodes_in_clique[self.uid])
-                self.cliquetree.add_edge(clq, self.uid, nodes=sep)
-                changed_edges.append((clq, self.uid))
+                    self.cliquetree.add_edge(clq, self.uid, nodes=sep)
+                    changed_edges.append((clq, self.uid))
+            except NetworkXNoPath:
+                # The two nodes belong to disconnected components, so it
+                # is safe to add the edge.
+                sep = self.nodes_in_clique[K1]\
+                          .intersection(self.nodes_in_clique[K2])
+                self.cliquetree.add_edge(K1, K2, nodes=sep)
+                changed_edges.append((K1, K2))
+
         else:
             # not K1 and not K2
             self._add_clique_node(self.uid,
@@ -216,6 +231,8 @@ class CliqueTree:
                                         and u not in self.G[v]:
                                     # Ky for u
                                     self.insertable.add(self._edge(u, v))
+                                    if u == v:
+                                        raise ValueError('u is equal to v')
                     else:
                         min_weights.append(min_weights[-1])
                     if nodes_seen:
