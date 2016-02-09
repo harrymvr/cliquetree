@@ -263,6 +263,33 @@ class CliqueTree:
                 for u in self.nodes_in_clique[clq]:
                     self.insertable.add(self._edge(u, v))
 
+    def from_graph(self, G):
+        self.G = G.copy()
+        cliques = nx.clique.find_cliques(G)
+        cliquegraph = nx.clique.make_max_clique_graph(G)
+        clique_dict = {}
+        for v, clq in zip(cliquegraph.nodes(), cliques):
+            clique_dict[v] = clq
+
+        for u, v, data in cliquegraph.edges(data=True):
+            cliquegraph.remove_edge(u, v)
+            sep = set(clique_dict[u]).intersection(set(clique_dict[v]))
+            w = len(sep)
+            cliquegraph.add_edge(u, v, nodes=sep, weight=-w)
+        self.cliquetree = nx.minimum_spanning_tree(cliquegraph)
+
+        for v in self.G:
+            self.node_in_cliques[v] = set()
+        for v in clique_dict:
+            self.nodes_in_clique[v] = set()
+            for node in clique_dict[v]:
+                self.nodes_in_clique[v].add(node)
+                self.node_in_cliques[node].add(v)
+        self.uid = len(G) + 1
+        self.insertable = set()
+        for v in self.G:
+            self.update_insertable(v)
+
     def query_edge(self, x, y):
         e = self._edge(x, y)
         if not self.insertable or e in self.insertable:
