@@ -1,3 +1,4 @@
+from copy import deepcopy
 import networkx as nx
 from networkx import NetworkXNoPath
 
@@ -14,6 +15,20 @@ class CliqueTree:
         self.uid = 1
         self.insertable = set()
         self.deletable = set()
+
+    def __deepcopy__(self, memo):
+        obj = CliqueTree()
+        obj.G = deepcopy(self.G, memo)
+        obj.cliquetree = deepcopy(self.cliquetree, memo)
+        obj.node_in_cliques = deepcopy(self.node_in_cliques, memo)
+        obj.nodes_in_clique = deepcopy(self.nodes_in_clique, memo)
+        obj.uid = self.uid
+        obj.insertable = deepcopy(self.insertable, memo)
+        obj.deletable = deepcopy(self.deletable, memo)
+        return obj
+
+    def copy(self):
+        return deepcopy(self)
 
     def _clique_is_maximal(self, nodes):
         """Returns True if the list of given nodes form a maximal clique
