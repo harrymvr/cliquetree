@@ -65,7 +65,7 @@ class CliqueTree:
                 self.node_in_cliques[node] = set()
             self.node_in_cliques[node].add(uid)
 
-    def add_edge(self, x, y):
+    def add_edge(self, x, y, update_insertable=True):
         """Adds an edge to the clique tree and updates the data structures.
         """
         # Start by checking if the edge can be inserted
@@ -212,9 +212,10 @@ class CliqueTree:
         #     self.insertable.remove((x, y))
 
         self.uid += 1
-        self.insertable = set()
-        for v in self.G:
-            self.update_insertable(v)
+        if update_insertable:
+            self.insertable = set()
+            for v in self.G:
+                self.update_insertable(v)
         return True
 
     def update_insertable(self, v):
