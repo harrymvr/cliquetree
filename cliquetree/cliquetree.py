@@ -218,7 +218,12 @@ class CliqueTree:
                 self.update_insertable(v)
         return True
 
-    def update_insertable(self, v):
+    def update_insertable(self, v, stop_at=None):
+        """Updates the insertable edges in the graph.
+
+        For early stopping, set stop_at to k. Then, the function will return
+        after when k edges have been added to the insertable set.
+        """
         K1 = 0
         Kx = None
         cliques_visited = set()
@@ -255,6 +260,9 @@ class CliqueTree:
                                     self.insertable.add(self._edge(u, v))
                                     if u == v:
                                         raise ValueError('u is equal to v')
+                                    if stop_at is not None and \
+                                            len(self.insertable) >= stop_at:
+                                        return
                     else:
                         min_weights.append(min_weights[-1])
                     if nodes_seen:
@@ -277,6 +285,9 @@ class CliqueTree:
             if clq not in cliques_visited:
                 for u in self.nodes_in_clique[clq]:
                     self.insertable.add(self._edge(u, v))
+                    if stop_at is not None and \
+                            len(self.insertable) >= stop_at:
+                        return
 
     def update_deletable(self):
         self.deletable = set()
