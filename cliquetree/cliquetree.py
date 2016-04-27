@@ -212,8 +212,8 @@ class CliqueTree:
         #     self.insertable.remove((x, y))
 
         self.uid += 1
+        self.insertable = set()
         if update_insertable:
-            self.insertable = set()
             for v in self.G:
                 self.update_insertable(v)
         return True
